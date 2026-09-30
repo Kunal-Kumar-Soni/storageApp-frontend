@@ -1,11 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  fetchAllUsers,
-  fetchUser,
-  deleteUserById,
-  logoutUserById,
-} from "./api/userApi";
+import { fetchAllUsers, fetchUser, deleteUserById, logoutUserById } from "./api/userApi";
 
 export default function UsersPage() {
   const [users, setUsers] = useState([]);
@@ -13,33 +8,6 @@ export default function UsersPage() {
   const [userEmail, setUserEmail] = useState("");
   const [userRole, setUserRole] = useState("User");
   const navigate = useNavigate();
-
-  const logoutUser = async (user) => {
-    const confirmed = confirm(`You are about to logout ${user.email}`);
-    if (!confirmed) return;
-    try {
-      await logoutUserById(user.id);
-      fetchUsers();
-    } catch (err) {
-      console.error("Logout error:", err);
-    }
-  };
-
-  const deleteUser = async (user) => {
-    const confirmed = confirm(`You are about to delete ${user.email}`);
-    if (!confirmed) return;
-    try {
-      await deleteUserById(user.id);
-      fetchUsers();
-    } catch (err) {
-      console.error("Delete error:", err);
-    }
-  };
-
-  useEffect(() => {
-    fetchUsers();
-    fetchCurrentUser();
-  }, []);
 
   async function fetchUsers() {
     try {
@@ -64,6 +32,33 @@ export default function UsersPage() {
     }
   }
 
+  const logoutUser = async (user) => {
+    const confirmed = confirm(`You are about to logout ${user.email}`);
+    if (!confirmed) return;
+    try {
+      await logoutUserById(user.id);
+      await fetchUsers();
+    } catch (err) {
+      console.error("Logout error:", err);
+    }
+  };
+
+  const deleteUser = async (user) => {
+    const confirmed = confirm(`You are about to delete ${user.email}`);
+    if (!confirmed) return;
+    try {
+      await deleteUserById(user.id);
+      fetchUsers();
+    } catch (err) {
+      console.error("Delete error:", err);
+    }
+  };
+
+  useEffect(async () => {
+    await fetchUsers();
+    await fetchCurrentUser();
+  }, []);
+
   return (
     <div className="max-w-5xl mt-10 mx-4">
       <h1 className="text-3xl font-bold mb-6">All Users</h1>
@@ -78,9 +73,7 @@ export default function UsersPage() {
             <th className="border p-3 bg-gray-200 text-left">Email</th>
             <th className="border p-3 bg-gray-200 text-left">Status</th>
             <th className="border p-3 bg-gray-200 text-left"></th>
-            {userRole === "Admin" && (
-              <th className="border p-3 bg-gray-200 text-left"></th>
-            )}
+            {userRole === "Admin" && <th className="border p-3 bg-gray-200 text-left"></th>}
           </tr>
         </thead>
         <tbody>
@@ -88,9 +81,7 @@ export default function UsersPage() {
             <tr key={user.id}>
               <td className="border p-3">{user.name}</td>
               <td className="border p-3">{user.email}</td>
-              <td className="border p-3">
-                {user.isLoggedIn ? "Logged In" : "Logged Out"}
-              </td>
+              <td className="border p-3">{user.isLoggedIn ? "Logged In" : "Logged Out"}</td>
               <td className="border p-3">
                 <button
                   onClick={() => logoutUser(user)}
