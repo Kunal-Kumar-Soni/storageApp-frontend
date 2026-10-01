@@ -75,6 +75,7 @@ function DirectoryView() {
       case "mp4":
       case "mov":
       case "avi":
+      case "mkv":
         return "video";
       case "zip":
       case "rar":
@@ -115,7 +116,7 @@ function DirectoryView() {
       file,
       name: file.name,
       size: file.size,
-      id: `temp-${Date.now()}`,
+      id: `temp-${crypto.randomUUID()}`,
       isUploading: true,
       progress: 0,
     };

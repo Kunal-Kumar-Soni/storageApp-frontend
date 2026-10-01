@@ -11,7 +11,7 @@ import {
 import { BsThreeDotsVertical } from "react-icons/bs";
 import ContextMenu from "./ContextMenu";
 import { useDirectoryContext } from "../context/DirectoryContext";
-import { formatSize } from "./DetailsPopup";
+import { formatSize } from "../../utils/formatSize";
 
 function DirectoryItem({ item, uploadProgress }) {
   const { handleRowClick, activeContextMenu, handleContextMenu, getFileIcon, isUploading } =

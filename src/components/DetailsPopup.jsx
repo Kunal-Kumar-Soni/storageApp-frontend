@@ -1,29 +1,8 @@
-import { useEffect, useState } from "react";
-
-export const formatSize = (bytes = 0) => {
-  const KB = 1024;
-  const MB = KB * 1024;
-  const GB = MB * 1024;
-
-  if (bytes >= GB) return (bytes / GB).toFixed(2) + " GB";
-  if (bytes >= MB) return (bytes / MB).toFixed(2) + " MB";
-  if (bytes >= KB) return (bytes / KB).toFixed(2) + " KB";
-
-  return bytes + " B";
-};
+import { useEffect } from "react";
+import { formatSize } from "../../utils/formatSize";
 
 function DetailsPopup({ item, onClose }) {
-  const [details, setDetails] = useState({
-    path: "/",
-    size: 0,
-    createdAt: new Date().toLocaleString(),
-    updatedAt: new Date().toLocaleString(),
-    numberOfFiles: 0,
-    numberOfFolders: 0,
-  });
-
   const { name, isDirectory, size, createdAt, updatedAt } = item;
-  const { path, numberOfFiles, numberOfFolders } = details;
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -49,9 +28,9 @@ function DetailsPopup({ item, onClose }) {
           <div>
             <span className="font-semibold">Name:</span> {name}
           </div>
-          <div>
+          {/* <div>
             <span className="font-semibold">Path:</span> {path}
-          </div>
+          </div> */}
           <div>
             <span className="font-semibold">Size:</span> {formatSize(size)}
           </div>
@@ -65,12 +44,12 @@ function DetailsPopup({ item, onClose }) {
           </div>
           {isDirectory && (
             <>
-              <div>
+              {/* <div>
                 <span className="font-semibold">Files:</span> {numberOfFiles}
               </div>
               <div>
                 <span className="font-semibold">Folders:</span> {numberOfFolders}
-              </div>
+              </div> */}
             </>
           )}
         </div>
