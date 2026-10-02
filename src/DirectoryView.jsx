@@ -98,7 +98,7 @@ function DirectoryView() {
 
   function handleRowClick(type, id) {
     if (type === "directory") navigate(`/directory/${id}`);
-    else window.location.href = `http://localhost:3000/file/${id}`;
+    else window.location.href = `${import.meta.env.VITE_BACKEND_BASE_URL}/file/${id}`;
   }
 
   async function handleFileSelect(e) {

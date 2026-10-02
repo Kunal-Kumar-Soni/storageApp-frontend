@@ -1,5 +1,4 @@
 import { useDirectoryContext } from "../context/DirectoryContext";
-const BASE_URL = import.meta.env.VITE_BACKEND_BASE_URL;
 
 function ContextMenu({ item, isUploadingItem }) {
   const { handleCancelUpload, setDeleteItem, openRenameModal, openDetailsPopup } =
@@ -39,7 +38,9 @@ function ContextMenu({ item, isUploadingItem }) {
     <div className={menuClass}>
       <div
         className={itemClass}
-        onClick={() => (window.location.href = `${BASE_URL}/file/${item.id}?action=download`)}
+        onClick={() =>
+          (window.location.href = `${import.meta.env.VITE_BACKEND_BASE_URL}/file/${item.id}?action=download`)
+        }
       >
         Download
       </div>
