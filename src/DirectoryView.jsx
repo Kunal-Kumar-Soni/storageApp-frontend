@@ -13,7 +13,7 @@ import {
   renameDirectory,
 } from "./api/directoryApi";
 
-import { deleteFile, renameFile, uploadCompete, uploadInitiate } from "./api/fileApi";
+import { deleteFile, renameFile, uploadComplete, uploadInitiate } from "./api/fileApi";
 import DetailsPopup from "./components/DetailsPopup";
 import ConfirmDeleteModal from "./components/ConfirmDeleteModel";
 
@@ -31,6 +31,8 @@ function DirectoryView() {
   const [renameType, setRenameType] = useState(null);
   const [renameId, setRenameId] = useState(null);
   const [renameValue, setRenameValue] = useState("");
+
+  const [storageVersion, setStorageVersion] = useState(0);
 
   const fileInputRef = useRef(null);
 
@@ -158,7 +160,8 @@ function DirectoryView() {
 
     xhr.onload = async () => {
       if (xhr.status == 200) {
-        const fileUploadResponse = await uploadCompete(fileId);
+        const fileUploadResponse = await uploadComplete(fileId);
+        setStorageVersion((version) => version + 1);
         console.log(fileUploadResponse);
       } else {
         setErrorMessage("File couldn't uploaded");
@@ -190,8 +193,12 @@ function DirectoryView() {
 
   async function confirmDelete(item) {
     try {
-      if (item.isDirectory) await deleteDirectory(item.id);
-      else await deleteFile(item.id);
+      if (item.isDirectory) {
+        await deleteDirectory(item.id);
+      } else {
+        await deleteFile(item.id);
+      }
+      setStorageVersion((version) => version + 1);
       setDeleteItem(null);
       loadDirectory();
     } catch (err) {
@@ -240,6 +247,10 @@ function DirectoryView() {
     return () => document.removeEventListener("click", handleDocumentClick);
   }, []);
 
+  // useEffect(() => {
+  //   window.location.reload();
+  // }, []);
+
   const combinedItems = [
     ...directoriesList.map((d) => ({ ...d, isDirectory: true })),
     ...filesList.map((f) => ({ ...f, isDirectory: false })),
@@ -278,6 +289,7 @@ function DirectoryView() {
 
         <DirectoryHeader
           directoryName={directoryName}
+          storageVersion={storageVersion}
           onCreateFolderClick={() => setShowCreateDirModal(true)}
           onUploadFilesClick={() => fileInputRef.current.click()}
           fileInputRef={fileInputRef}

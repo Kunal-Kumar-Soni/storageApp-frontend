@@ -10,6 +10,7 @@ function DirectoryHeader({
   onUploadFilesClick,
   fileInputRef,
   handleFileSelect,
+  storageVersion,
   disabled = false,
 }) {
   const [showUserMenu, setShowUserMenu] = useState(false);
@@ -42,7 +43,7 @@ function DirectoryHeader({
 
   useEffect(() => {
     loadUser();
-  }, []);
+  }, [storageVersion]);
 
   const handleUserIconClick = () => {
     setShowUserMenu((prev) => !prev);
