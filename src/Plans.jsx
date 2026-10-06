@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { createSubscription } from "./api/subscription";
+import { createSubscription, getSubscription } from "./api/subscription";
 import { useEffect } from "react";
 
 const PLAN_CATALOG = {
@@ -89,7 +89,7 @@ function Price({ value }) {
   );
 }
 
-function PlanCard({ plan, onSelect }) {
+function PlanCard({ plan, onSelect, isSubscribed }) {
   return (
     <div
       className={classNames(
@@ -136,17 +136,26 @@ function PlanCard({ plan, onSelect }) {
         ))}
       </ul>
 
-      <button
-        onClick={() => onSelect?.(plan)}
-        className={classNames(
-          "mt-auto cursor-pointer inline-flex w-full items-center justify-center rounded-xl px-4 py-2.5 text-sm font-semibold transition focus:outline-none focus:ring-2 focus:ring-offset-2",
-          plan.popular
-            ? "bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-600"
-            : "bg-slate-900 text-white hover:bg-slate-800 focus:ring-slate-900",
-        )}
-      >
-        {plan.cta}
-      </button>
+      {isSubscribed ? (
+        <button
+          disabled
+          className="mt-auto inline-flex w-full cursor-not-allowed items-center justify-center gap-2 rounded-xl bg-emerald-50 px-4 py-2.5 text-sm font-semibold text-emerald-700 ring-1 ring-emerald-200"
+        >
+          ✓ Already Subscribed
+        </button>
+      ) : (
+        <button
+          onClick={() => onSelect?.(plan)}
+          className={classNames(
+            "mt-auto cursor-pointer inline-flex w-full items-center justify-center rounded-xl px-4 py-2.5 text-sm font-semibold transition",
+            plan.popular
+              ? "bg-blue-600 text-white hover:bg-blue-700"
+              : "bg-slate-900 text-white hover:bg-slate-800",
+          )}
+        >
+          {plan.cta}
+        </button>
+      )}
     </div>
   );
 }
@@ -170,6 +179,20 @@ function razorpayPopup({ subscriptionId }) {
 export default function Plans() {
   const [mode, setMode] = useState("monthly");
   const plans = PLAN_CATALOG[mode];
+
+  const [subscribedPlanIds, setSubscribedPlanIds] = useState([]);
+  const getSubscriptionData = async () => {
+    try {
+      const data = await getSubscription();
+      setSubscribedPlanIds(data.subscribedPlanIds);
+      console.log(data.subscribedPlanIds);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  useEffect(() => {
+    getSubscriptionData();
+  }, []);
 
   async function handleSelect(plan) {
     const { subscriptionId } = await createSubscription(plan.id);
@@ -218,7 +241,12 @@ export default function Plans() {
       {/* Cards grid */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {plans.map((plan) => (
-          <PlanCard key={`${mode}-${plan.id}`} plan={plan} onSelect={handleSelect} />
+          <PlanCard
+            key={`${mode}-${plan.id}`}
+            plan={plan}
+            onSelect={handleSelect}
+            isSubscribed={subscribedPlanIds.includes(plan.id)}
+          />
         ))}
       </div>
 
