@@ -1,0 +1,9 @@
+const showTestPass = false;
+
+if (showTestPass) {
+  console.log("Test Passed!");
+  process.exit(0);
+} else {
+  console.log("Test failed!");
+  process.exit(1);
+}
