@@ -1,6 +1,13 @@
 name: Deploy StorageApp Frontend
 
-on: [push, workflow_dispatch]
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
   deploy:
@@ -8,18 +15,19 @@ jobs:
 
     env:
       S3_BUCKET_NAME: kunal-storageapp-frontend
-      VITE_GOOGLE_CLIENT_ID: 754657210662-r76ttct0cjaq8fradlpobothme2t49uf.apps.googleusercontent.com
-      VITE_BACKEND_BASE_URL: https://dev.kunalkumarsoni.in
-      VITE_RAZORPAY_KEY: rzp_test_Tb83TYCyWoD6Ob
+      VITE_GOOGLE_CLIENT_ID: ${{ vars.VITE_GOOGLE_CLIENT_ID }}
+      VITE_BACKEND_BASE_URL: ${{ vars.VITE_BACKEND_BASE_URL }}
+      VITE_RAZORPAY_KEY: ${{ vars.VITE_RAZORPAY_KEY }}
 
     steps:
-      - name: Clone frontend repository
-        run: git clone https://github.com/Kunal-Kumar-Soni/storageApp-frontend.git .
+      - name: Checkout frontend repository
+        uses: actions/checkout@v5
 
       - name: Setup Node
         uses: actions/setup-node@v6
         with:
           node-version: "24"
+          cache: npm
 
       - name: Install dependencies
         run: npm ci
@@ -41,4 +49,4 @@ jobs:
         run: aws s3 sync dist/ "s3://${S3_BUCKET_NAME}/" --delete
 
       - name: Deployment complete
-        run: echo "Frontend Deployed Successfully..."
+        run: echo "Frontend deployed successfully!"
