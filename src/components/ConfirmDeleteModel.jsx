@@ -3,27 +3,31 @@ function ConfirmDeleteModal({ item, onConfirm, onCancel }) {
 
   return (
     <div
-      className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/40 p-4 backdrop-blur-sm"
       onClick={onCancel}
     >
       <div
-        className="bg-white p-6 rounded-lg shadow-md w-[90%] max-w-md"
+        className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
-        <h2 className="text-lg font-semibold mb-4">Confirm Deletion</h2>
-        <p className="text-sm mb-6">
-          Are you sure you want to delete the "{item.name}"{" "}
-          {item.isDirectory ? "folder" : "file"}?
+        <p className="text-xs font-bold uppercase tracking-[.16em] text-rose-600">
+          This action cannot be undone
         </p>
-        <div className="flex justify-end gap-2">
+        <h2 className="mt-2 text-xl font-bold text-slate-900">
+          Delete {item.isDirectory ? "folder" : "file"}?
+        </h2>
+        <p className="mb-6 mt-2 text-sm leading-6 text-slate-500">
+          Are you sure you want to delete the "{item.name}" {item.isDirectory ? "folder" : "file"}?
+        </p>
+        <div className="flex flex-col gap-2 sm:flex-row sm:justify-end">
           <button
-            className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+            className="rounded-xl bg-rose-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-rose-700"
             onClick={() => onConfirm(item)}
           >
             Yes, Delete
           </button>
           <button
-            className="bg-gray-300 text-black px-4 py-2 rounded hover:bg-gray-400"
+            className="rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-600 transition hover:bg-slate-100"
             onClick={onCancel}
           >
             Cancel

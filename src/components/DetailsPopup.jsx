@@ -16,31 +16,40 @@ function DetailsPopup({ item, onClose }) {
 
   return (
     <div
-      className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/40 p-4 backdrop-blur-sm"
       onClick={onClose}
     >
       <div
-        className="bg-white p-6 rounded-lg shadow-md w-[90%] max-w-md"
+        className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
-        <h2 className="text-lg font-semibold mb-4">Details</h2>
-        <div className="space-y-2 text-sm">
-          <div>
-            <span className="font-semibold">Name:</span> {name}
+        <p className="text-xs font-bold uppercase tracking-[.16em] text-blue-600">
+          File information
+        </p>
+        <h2 className="mt-2 truncate text-xl font-bold text-slate-900">{name}</h2>
+        <div className="mt-5 divide-y divide-slate-100 rounded-xl border border-slate-100 text-sm">
+          <div className="flex justify-between gap-4 p-3">
+            <span className="font-medium text-slate-500">Name</span>
+            <span className="truncate font-semibold text-slate-800">{name}</span>
           </div>
           {/* <div>
             <span className="font-semibold">Path:</span> {path}
           </div> */}
-          <div>
-            <span className="font-semibold">Size:</span> {formatSize(size)}
+          <div className="flex justify-between gap-4 p-3">
+            <span className="font-medium text-slate-500">Size</span>
+            <span className="font-semibold text-slate-800">{formatSize(size)}</span>
           </div>
-          <div>
-            <span className="font-semibold">Created At:</span>{" "}
-            {new Date(createdAt).toLocaleString()}
+          <div className="flex justify-between gap-4 p-3">
+            <span className="font-medium text-slate-500">Created</span>
+            <span className="text-right font-semibold text-slate-800">
+              {new Date(createdAt).toLocaleString()}
+            </span>
           </div>
-          <div>
-            <span className="font-semibold">Updated At:</span>{" "}
-            {new Date(updatedAt).toLocaleString()}
+          <div className="flex justify-between gap-4 p-3">
+            <span className="font-medium text-slate-500">Updated</span>
+            <span className="text-right font-semibold text-slate-800">
+              {new Date(updatedAt).toLocaleString()}
+            </span>
           </div>
           {isDirectory && (
             <>
@@ -53,9 +62,9 @@ function DetailsPopup({ item, onClose }) {
             </>
           )}
         </div>
-        <div className="flex justify-end mt-2">
+        <div className="mt-6 flex justify-end">
           <button
-            className="bg-gray-300 text-black px-4 py-2 rounded hover:bg-gray-400"
+            className="rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-700"
             onClick={onClose}
           >
             Close

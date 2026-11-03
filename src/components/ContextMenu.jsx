@@ -5,8 +5,9 @@ function ContextMenu({ item, isUploadingItem }) {
     useDirectoryContext();
 
   const menuClass =
-    "absolute bg-white border border-blue-400 shadow-md rounded text-sm z-50 right-2 top-4/5 overflow-hidden";
-  const itemClass = "px-4 py-2 hover:bg-blue-100 cursor-pointer";
+    "absolute right-3 top-12 z-50 min-w-36 overflow-hidden rounded-xl border border-slate-200 bg-white py-1 text-sm shadow-xl shadow-slate-300/40";
+  const itemClass =
+    "cursor-pointer px-4 py-2.5 text-slate-600 transition hover:bg-slate-50 hover:text-slate-950";
 
   if (item.isDirectory) {
     return (

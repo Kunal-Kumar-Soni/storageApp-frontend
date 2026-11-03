@@ -3,6 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { fetchUser, logoutUser, logoutAllSessions } from "../api/userApi";
 import { FaFolderPlus, FaUpload, FaUser, FaSignOutAlt, FaSignInAlt } from "react-icons/fa";
 import { formatSize } from "../../utils/formatSize";
+import UserAvatar from "./UserAvatar";
+import BrandMark from "./BrandMark";
 
 function DirectoryHeader({
   directoryName,
@@ -17,14 +19,15 @@ function DirectoryHeader({
   const [loggedIn, setLoggedIn] = useState(false);
   const [userName, setUserName] = useState("Guest User");
   const [userEmail, setUserEmail] = useState("guest@example.com");
-  // const [userPicture, setUserPicture] = useState("");
   const [maxStorageInBytes, setMaxStorageInBytes] = useState(1024 ** 3);
   const [usedStorageInBytes, setUsedStorageInBytes] = useState(0);
+  const [isLoadingUser, setIsLoadingUser] = useState(true);
 
   const userMenuRef = useRef(null);
   const navigate = useNavigate();
 
   async function loadUser() {
+    setIsLoadingUser(true);
     try {
       const user = await fetchUser();
       setUserName(user.name);
@@ -38,6 +41,8 @@ function DirectoryHeader({
       setLoggedIn(false);
       setUserName("Guest User");
       setUserEmail("guest@example.com");
+    } finally {
+      setIsLoadingUser(false);
     }
   }
 
@@ -88,26 +93,36 @@ function DirectoryHeader({
   }, []);
 
   return (
-    <header className="flex items-center justify-between border-b border-gray-300 py-2 mb-4">
-      <h1 className="text-xl font-semibold">{directoryName}</h1>
-      <div className="flex gap-4 items-end">
+    <header className="mb-7 flex flex-col gap-4 border-b border-slate-200 px-1 pb-5 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex min-w-0 items-center gap-3">
+        <Link to="/" title="StorageApp home">
+          <BrandMark className="h-10 w-10" />
+        </Link>
+        <div className="min-w-0">
+          <p className="text-xs font-semibold uppercase tracking-[.16em] text-blue-600">
+            My storage
+          </p>
+          <h1 className="truncate text-xl font-bold text-slate-900">{directoryName}</h1>
+        </div>
+      </div>
+      <div className="flex items-center gap-2 sm:gap-3">
         <button
-          className="text-blue-500 hover:text-blue-700 text-xl -mb-0.5 mr-0.5 disabled:text-blue-300 disabled:cursor-not-allowed"
+          className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm font-semibold text-slate-700 transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
           title="Create Folder"
           onClick={onCreateFolderClick}
           disabled={disabled}
         >
-          <FaFolderPlus />
+          <FaFolderPlus /> <span className="hidden sm:inline">New folder</span>
         </button>
         <button
-          className="text-blue-500 hover:text-blue-700 text-xl disabled:text-blue-300 disabled:cursor-not-allowed"
+          className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-3 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
           title="Upload Files"
           onClick={async () => {
             onUploadFilesClick();
           }}
           disabled={disabled}
         >
-          <FaUpload />
+          <FaUpload /> <span className="hidden sm:inline">Upload</span>
         </button>
         <input
           ref={fileInputRef}
@@ -119,65 +134,63 @@ function DirectoryHeader({
         />
         <div className="relative flex" ref={userMenuRef}>
           <button
-            className="text-blue-500 hover:text-blue-700 text-xl"
+            className="grid h-10 w-10 place-items-center rounded-xl border border-slate-200 bg-white text-slate-600 transition hover:bg-slate-50 hover:text-slate-950"
             title="User Menu"
             onClick={handleUserIconClick}
           >
-            {/* {userPicture ? (
-              <img className="w-8 h-8 rounded-full object-cover" src={userPicture} alt={userName} />
-            ) : (
-              )} */}
-            <FaUser />
+            {loggedIn ? <UserAvatar name={userName} className="h-8 w-8" /> : <FaUser />}
           </button>
 
           {showUserMenu && (
-            <div className="absolute right-0 top-4 mt-2 bg-white rounded-md shadow-md z-10 border border-gray-300 overflow-hidden">
+            <div className="absolute right-0 top-11 z-10 w-72 overflow-hidden rounded-2xl border border-slate-200 bg-white py-2 shadow-xl shadow-slate-300/40">
               {loggedIn ? (
                 <>
-                  <div className="px-3 py-2 text-sm text-gray-800">
+                  <div className="px-4 py-3 text-sm text-slate-800">
                     <div className="font-semibold">{userName}</div>
-                    <div className="text-xs text-gray-500">{userEmail}</div>
-                    <div className="flex flex-col text-xs mt-2">
-                      <div className=" h-1 bg-gray-300 rounded-full overflow-hidden mb-1">
+                    <div className="mt-0.5 text-xs text-slate-500">{userEmail}</div>
+                    <div className="mt-3 flex flex-col text-xs">
+                      <div className="mb-1 h-1.5 overflow-hidden rounded-full bg-slate-100">
                         <div
-                          className="bg-blue-500 rounded-full h-full"
+                          className="h-full rounded-full bg-blue-600"
                           style={{ width: `${(usedStorageInBytes / maxStorageInBytes) * 100}%` }}
                         ></div>
                       </div>
                       <div className="text-xs">
-                        {formatSize(usedStorageInBytes)} of {formatSize(maxStorageInBytes)}
+                        {isLoadingUser
+                          ? "Loading storage…"
+                          : `${formatSize(usedStorageInBytes)} of ${formatSize(maxStorageInBytes)}`}
                       </div>
                     </div>
                   </div>
-                  <div className="border-t border-gray-200" />
+                  <div className="my-1 border-t border-slate-100" />
                   <Link
                     to="/plans"
-                    className="flex items-center text-sm gap-2 text-blue-700 cursor-pointer hover:bg-gray-200 px-4 py-2"
+                    className="mx-2 flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-blue-700 transition hover:bg-blue-50"
                   >
                     Get More Storage
                   </Link>
                   <div
-                    className="flex items-center gap-2 text-gray-700 cursor-pointer hover:bg-gray-200 px-4 py-2"
+                    className="mx-2 flex cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-slate-600 transition hover:bg-slate-50"
                     onClick={handleLogout}
                   >
-                    <FaSignOutAlt className="text-blue-600" /> Logout
+                    <FaSignOutAlt className="text-slate-400" /> Logout
                   </div>
                   <div
-                    className="flex items-center gap-2 text-gray-700 cursor-pointer hover:bg-gray-200 px-4 py-2"
+                    className="mx-2 flex cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-slate-600 transition hover:bg-slate-50"
                     onClick={handleLogoutAll}
                   >
-                    <FaSignOutAlt className="text-blue-600" /> Logout All
+                    <FaSignOutAlt className="text-slate-400" /> Logout all devices
                   </div>
                 </>
               ) : (
                 <div
-                  className="flex items-center gap-2 text-gray-700 cursor-pointer hover:bg-gray-200 px-4 py-2"
+                  className="mx-2 flex cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-slate-600 transition hover:bg-slate-50"
                   onClick={() => {
                     navigate("/login");
                     setShowUserMenu(false);
                   }}
                 >
-                  <FaSignInAlt className="text-blue-600" /> Login
+                  <FaSignInAlt className="text-blue-600" /> Log in
                 </div>
               )}
             </div>

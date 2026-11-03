@@ -39,7 +39,7 @@ function DirectoryItem({ item, uploadProgress }) {
 
   return (
     <div
-      className="flex flex-col justify-between px-3 py-1 hover:bg-blue-100 border border-gray-300 hover:border-blue-500 rounded cursor-pointer relative"
+      className="relative flex min-w-0 flex-col justify-between rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-sm transition hover:-translate-y-0.5 hover:border-blue-300 hover:shadow-md cursor-pointer"
       onClick={() =>
         !(activeContextMenu || isUploading) &&
         handleRowClick(item.isDirectory ? "directory" : "file", item.id)
@@ -47,19 +47,23 @@ function DirectoryItem({ item, uploadProgress }) {
       onContextMenu={(e) => handleContextMenu(e, item.id)}
     >
       <div
-        className="flex justify-between"
+        className="flex min-w-0 items-center justify-between gap-2"
         title={`Size: ${formatSize(item.size)}\nCreate At: ${new Date(item.createdAt).toLocaleString()}`}
       >
-        <div className="flex items-center gap-2">
+        <div className="flex min-w-0 items-center gap-3">
           {item.isDirectory ? (
-            <FaFolder className="text-amber-500 text-lg" />
+            <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-amber-100 text-amber-600">
+              <FaFolder className="text-lg" />
+            </span>
           ) : (
-            renderFileIcon(getFileIcon(item.name))
+            <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-blue-100 text-blue-600">
+              {renderFileIcon(getFileIcon(item.name))}
+            </span>
           )}
-          <span className="text-gray-800 truncate">{item.name}</span>
+          <span className="truncate text-sm font-semibold text-slate-800">{item.name}</span>
         </div>
         <div
-          className="text-gray-600 hover:text-gray-800 cursor-pointer hover:bg-blue-200 p-2 rounded-full"
+          className="rounded-lg p-2 text-slate-400 transition hover:bg-slate-100 hover:text-slate-700 cursor-pointer"
           onClick={(e) => handleContextMenu(e, item.id)}
         >
           <BsThreeDotsVertical />
@@ -69,15 +73,15 @@ function DirectoryItem({ item, uploadProgress }) {
         )}
       </div>
       {isUploadingItem && (
-        <div className="px-4 relative">
+        <div className="relative mt-3">
           <span
-            className={`text-xs font-medium  ${uploadProgress > 50 ? "text-gray-200" : "text-gray-600"} text-right block absolute left-1/2 top-1/2 -translate-1/2`}
+            className={`text-[10px] font-semibold ${uploadProgress > 50 ? "text-white" : "text-slate-600"} text-right block absolute left-1/2 top-1/2 -translate-1/2`}
           >
             {Math.floor(uploadProgress)}%
           </span>
-          <div className="w-full bg-gray-200 h-4 rounded">
+          <div className="h-4 w-full overflow-hidden rounded-full bg-slate-100">
             <div
-              className="h-4 rounded"
+              className="h-4 rounded-full"
               style={{
                 width: `${uploadProgress}%`,
                 backgroundColor: uploadProgress === 100 ? "#039203" : "#007bff",

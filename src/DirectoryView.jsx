@@ -16,6 +16,7 @@ import {
 import { deleteFile, renameFile, uploadComplete, uploadInitiate } from "./api/fileApi";
 import DetailsPopup from "./components/DetailsPopup";
 import ConfirmDeleteModal from "./components/ConfirmDeleteModel";
+import LoadingIndicator from "./components/LoadingIndicator";
 
 function DirectoryView() {
   const { dirId } = useParams();
@@ -25,6 +26,7 @@ function DirectoryView() {
   const [directoriesList, setDirectoriesList] = useState([]);
   const [filesList, setFilesList] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
+  const [isLoadingDirectory, setIsLoadingDirectory] = useState(true);
   const [showCreateDirModal, setShowCreateDirModal] = useState(false);
   const [newDirname, setNewDirname] = useState("New Folder");
   const [showRenameModal, setShowRenameModal] = useState(false);
@@ -48,6 +50,7 @@ function DirectoryView() {
   const closeDetailsPopup = () => setDetailsItem(null);
 
   const loadDirectory = async () => {
+    setIsLoadingDirectory(true);
     try {
       const data = await getDirectoryItems(dirId);
       setDirectoryName(dirId ? data.name : "Cloud Storage");
@@ -56,6 +59,8 @@ function DirectoryView() {
     } catch (err) {
       if (err.response?.status === 401) navigate("/login");
       else setErrorMessage(err.response?.data?.error || err.message);
+    } finally {
+      setIsLoadingDirectory(false);
     }
   };
 
@@ -279,66 +284,70 @@ function DirectoryView() {
         openDetailsPopup,
       }}
     >
-      <div className="mx-2 md:mx-4">
-        {errorMessage &&
-          errorMessage !== "Directory not found or you do not have access to it!" && (
-            <div className="error-message text-red-500 text-xs text-center mt-1">
-              {errorMessage}
-            </div>
+      <div className="min-h-screen bg-slate-50 px-4 py-4 text-slate-900 sm:px-6 lg:px-10 lg:py-8">
+        <div className="mx-auto max-w-6xl">
+          {errorMessage &&
+            errorMessage !== "Directory not found or you do not have access to it!" && (
+              <div className="mb-4 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-center text-sm font-medium text-rose-700">
+                {errorMessage}
+              </div>
+            )}
+
+          <DirectoryHeader
+            directoryName={directoryName}
+            storageVersion={storageVersion}
+            onCreateFolderClick={() => setShowCreateDirModal(true)}
+            onUploadFilesClick={() => fileInputRef.current.click()}
+            fileInputRef={fileInputRef}
+            handleFileSelect={handleFileSelect}
+            disabled={errorMessage === "Directory not found or you do not have access to it!"}
+          />
+
+          {showCreateDirModal && (
+            <CreateDirectoryModal
+              newDirname={newDirname}
+              setNewDirname={setNewDirname}
+              onClose={() => setShowCreateDirModal(false)}
+              onCreateDirectory={handleCreateDirectory}
+            />
           )}
 
-        <DirectoryHeader
-          directoryName={directoryName}
-          storageVersion={storageVersion}
-          onCreateFolderClick={() => setShowCreateDirModal(true)}
-          onUploadFilesClick={() => fileInputRef.current.click()}
-          fileInputRef={fileInputRef}
-          handleFileSelect={handleFileSelect}
-          disabled={errorMessage === "Directory not found or you do not have access to it!"}
-        />
+          {showRenameModal && (
+            <RenameModal
+              renameType={renameType}
+              renameValue={renameValue}
+              setRenameValue={setRenameValue}
+              onClose={() => setShowRenameModal(false)}
+              onRenameSubmit={handleRenameSubmit}
+            />
+          )}
 
-        {showCreateDirModal && (
-          <CreateDirectoryModal
-            newDirname={newDirname}
-            setNewDirname={setNewDirname}
-            onClose={() => setShowCreateDirModal(false)}
-            onCreateDirectory={handleCreateDirectory}
-          />
-        )}
+          {detailsItem && <DetailsPopup item={detailsItem} onClose={closeDetailsPopup} />}
 
-        {showRenameModal && (
-          <RenameModal
-            renameType={renameType}
-            renameValue={renameValue}
-            setRenameValue={setRenameValue}
-            onClose={() => setShowRenameModal(false)}
-            onRenameSubmit={handleRenameSubmit}
-          />
-        )}
-
-        {detailsItem && <DetailsPopup item={detailsItem} onClose={closeDetailsPopup} />}
-
-        {combinedItems.length === 0 ? (
-          errorMessage === "Directory not found or you do not have access to it!" ? (
-            <p className="text-center text-gray-600 mt-4 italic">
-              Directory not found or you do not have access to it!
-            </p>
+          {isLoadingDirectory ? (
+            <LoadingIndicator label="Loading your files…" />
+          ) : combinedItems.length === 0 ? (
+            errorMessage === "Directory not found or you do not have access to it!" ? (
+              <p className="mt-16 rounded-2xl border border-dashed border-slate-300 bg-white px-6 py-20 text-center text-sm text-slate-500">
+                Directory not found or you do not have access to it!
+              </p>
+            ) : (
+              <p className="mt-16 rounded-2xl border border-dashed border-slate-300 bg-white px-6 py-20 text-center text-sm text-slate-500">
+                This folder is empty. Use Upload or New folder to start organising your storage.
+              </p>
+            )
           ) : (
-            <p className="text-center text-gray-600 mt-4 italic">
-              This folder is empty. Upload a file or create a folder to see some data.
-            </p>
-          )
-        ) : (
-          <DirectoryList items={combinedItems} />
-        )}
+            <DirectoryList items={combinedItems} />
+          )}
 
-        {deleteItem && (
-          <ConfirmDeleteModal
-            item={deleteItem}
-            onConfirm={confirmDelete}
-            onCancel={() => setDeleteItem(null)}
-          />
-        )}
+          {deleteItem && (
+            <ConfirmDeleteModal
+              item={deleteItem}
+              onConfirm={confirmDelete}
+              onCancel={() => setDeleteItem(null)}
+            />
+          )}
+        </div>
       </div>
     </DirectoryContext.Provider>
   );

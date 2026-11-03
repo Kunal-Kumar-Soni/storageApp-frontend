@@ -5,10 +5,15 @@ import "./App.css";
 import Login from "./Login";
 import UsersPage from "./UsersPage";
 import Plans from "./Plans";
+import Home from "./Home";
 
 const router = createBrowserRouter([
   {
     path: "/",
+    element: <Home />,
+  },
+  {
+    path: "/drive",
     element: <DirectoryView />,
   },
   {
