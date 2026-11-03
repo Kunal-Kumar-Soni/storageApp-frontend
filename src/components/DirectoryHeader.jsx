@@ -142,7 +142,7 @@ function DirectoryHeader({
           </button>
 
           {showUserMenu && (
-            <div className="absolute right-0 top-11 z-10 w-72 overflow-hidden rounded-2xl border border-slate-200 bg-white py-2 shadow-xl shadow-slate-300/40">
+            <div className="fixed inset-x-4 top-32 z-50 overflow-hidden rounded-2xl border border-slate-200 bg-white py-2 shadow-2xl shadow-slate-300/40 sm:absolute sm:inset-auto sm:right-0 sm:top-11 sm:w-72 sm:shadow-xl">
               {loggedIn ? (
                 <>
                   <div className="px-4 py-3 text-sm text-slate-800">
