@@ -36,10 +36,11 @@ function DirectoryItem({ item, uploadProgress }) {
   }
 
   const isUploadingItem = item.id.startsWith("temp-");
+  const isContextMenuOpen = activeContextMenu === item.id;
 
   return (
     <div
-      className="relative flex min-w-0 flex-col justify-between rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-sm transition hover:-translate-y-0.5 hover:border-blue-300 hover:shadow-md cursor-pointer"
+      className={`relative flex min-w-0 flex-col justify-between rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-sm transition hover:-translate-y-0.5 hover:border-blue-300 hover:shadow-md cursor-pointer ${isContextMenuOpen ? "z-10" : ""}`}
       onClick={() =>
         !(activeContextMenu || isUploading) &&
         handleRowClick(item.isDirectory ? "directory" : "file", item.id)
@@ -68,7 +69,7 @@ function DirectoryItem({ item, uploadProgress }) {
         >
           <BsThreeDotsVertical />
         </div>
-        {activeContextMenu === item.id && (
+        {isContextMenuOpen && (
           <ContextMenu item={item} isUploadingItem={isUploadingItem} />
         )}
       </div>
