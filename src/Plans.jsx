@@ -198,7 +198,6 @@ export default function Plans() {
     try {
       const data = await getSubscription();
       setSubscribedPlanIds(data.subscribedPlanIds);
-      console.log(data.subscribedPlanIds);
     } catch (error) {
       console.log(error);
     } finally {
